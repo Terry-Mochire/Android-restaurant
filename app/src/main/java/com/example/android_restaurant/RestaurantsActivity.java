@@ -16,11 +16,17 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class RestaurantsActivity extends AppCompatActivity {
+
     private String[] restaurants = new String[] {"Mi Mero Mole", "Mother's Bistro",
             "Life of Pie", "Screen Door", "Luc Lac", "Sweet Basil",
             "Slappy Cakes", "Equinox", "Miss Delta's", "Andina",
             "Lardo", "Portland City Grill", "Fat Head's Brewery",
             "Chipotle", "Subway"};
+    private String[] cuisines = new String[] {"Vegan Food", "Breakfast", "Fishs Dishs",
+            "Scandinavian", "Coffee", "English Food", "Burgers", "Fast Food", "Noodle Soups",
+            "Mexican", "BBQ", "Cuban", "Bar Food", "Sports Bar", "Breakfast", "Mexican" };
+
+
     @BindView(R.id.locationTextView) TextView mLocationTextView;
     @BindView(R.id.listView) ListView mListView;
     public static final String TAG = RestaurantsActivity.class.getSimpleName();
@@ -36,7 +42,7 @@ public class RestaurantsActivity extends AppCompatActivity {
         mLocationTextView.setText("Here are all the restaurants near: " + location);
 
 
-        ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, restaurants);
+        MyRestaurantsArrayAdapter adapter = new MyRestaurantsArrayAdapter(this, android.R.layout.simple_list_item_1, restaurants, cuisines);
         mListView.setAdapter(adapter);
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
