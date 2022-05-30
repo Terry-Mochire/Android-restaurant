@@ -1,4 +1,4 @@
-package com.example.android_restaurant;
+package com.example.android_restaurant.ui;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -12,6 +12,14 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.example.android_restaurant.models.Business;
+import com.example.android_restaurant.models.Category;
+import com.example.android_restaurant.MyRestaurantsArrayAdapter;
+import com.example.android_restaurant.R;
+import com.example.android_restaurant.network.YelpApi;
+import com.example.android_restaurant.models.YelpBusinessesSearchResponse;
+import com.example.android_restaurant.network.YelpClient;
 
 import java.util.List;
 

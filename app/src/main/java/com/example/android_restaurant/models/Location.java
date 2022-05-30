@@ -1,5 +1,5 @@
 
-package com.example.android_restaurant;
+package com.example.android_restaurant.models;
 
 
 import com.google.gson.annotations.Expose;

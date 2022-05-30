@@ -1,4 +1,4 @@
-package com.example.android_restaurant;
+package com.example.android_restaurant.ui;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -8,7 +8,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import com.example.android_restaurant.R;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -28,12 +29,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
     @Override
     public void onClick(View v) {
-       if ( v == mFindRestaurantButton) {
-           String location = mLocationEditText.getText().toString();
-           Intent intent = new Intent(MainActivity.this, RestaurantsActivity.class );
-           intent.putExtra("location", location);
-           startActivity(intent);
-       }
+        if ( v == mFindRestaurantButton) {
+            String location = mLocationEditText.getText().toString();
+            Intent intent = new Intent(MainActivity.this, RestaurantsActivity.class );
+            intent.putExtra("location", location);
+            startActivity(intent);
+        }
 
     }
 }

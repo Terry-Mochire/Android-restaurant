@@ -1,7 +1,9 @@
-package com.example.android_restaurant;
+package com.example.android_restaurant.network;
 
 import static com.example.android_restaurant.Constants.YELP_API_KEY;
 import static com.example.android_restaurant.Constants.YELP_BASE_URL;
+
+import com.example.android_restaurant.network.YelpApi;
 
 import java.io.IOException;
 

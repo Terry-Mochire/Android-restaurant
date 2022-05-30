@@ -1,7 +1,10 @@
 
-package com.example.android_restaurant;
+package com.example.android_restaurant.models;
 
 import java.util.List;
+
+import com.example.android_restaurant.models.Business;
+import com.example.android_restaurant.models.Region;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 

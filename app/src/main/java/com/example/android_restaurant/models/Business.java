@@ -1,7 +1,8 @@
 
-package com.example.android_restaurant;
+package com.example.android_restaurant.models;
 
 import java.util.List;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 

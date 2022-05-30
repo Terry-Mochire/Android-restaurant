@@ -1,4 +1,6 @@
-package com.example.android_restaurant;
+package com.example.android_restaurant.network;
+
+import com.example.android_restaurant.models.YelpBusinessesSearchResponse;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
