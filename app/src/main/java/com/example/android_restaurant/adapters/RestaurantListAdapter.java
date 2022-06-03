@@ -1,6 +1,7 @@
 package com.example.android_restaurant.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,14 +13,17 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.android_restaurant.R;
 import com.example.android_restaurant.models.Business;
+import com.example.android_restaurant.ui.RestaurantDetailActivity;
 import com.squareup.picasso.Picasso;
+
+import org.parceler.Parcels;
 
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class RestaurantListAdapter extends RecyclerView.Adapter<RestaurantListAdapter.RestaurantViewHolder> {
+public class RestaurantListAdapter extends RecyclerView.Adapter<RestaurantListAdapter.RestaurantViewHolder>{
 
     private List<Business> mRestaurants;
     private Context mContext;
@@ -47,18 +51,21 @@ public class RestaurantListAdapter extends RecyclerView.Adapter<RestaurantListAd
         return mRestaurants.size();
     }
 
-    public class RestaurantViewHolder extends RecyclerView.ViewHolder{
+
+
+    public class RestaurantViewHolder extends RecyclerView.ViewHolder implements  View.OnClickListener{
         @BindView(R.id.restaurantImageView) ImageView mRestaurantImageView;
         @BindView(R.id.restaurantNameTextView) TextView mRestaurantNameTextView;
         @BindView(R.id.categoryTextView) TextView mCategoryTextView;
         @BindView(R.id.ratingTextView) TextView mRatingTextView;
 
-        private Context context;
+        private Context mContext;
 
         public RestaurantViewHolder( View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
             mContext = itemView.getContext();
+            itemView.setOnClickListener(this);
         }
 
         public void bindRestaurant(Business restaurant) {
@@ -66,6 +73,15 @@ public class RestaurantListAdapter extends RecyclerView.Adapter<RestaurantListAd
             mCategoryTextView.setText(restaurant.getCategories().get(0).getTitle());
             mRatingTextView.setText("Rating: " + restaurant.getRating() + "/5");
             Picasso.get().load(restaurant.getImageUrl()).into(mRestaurantImageView);
+        }
+
+        @Override
+        public void onClick(View view) {
+            int itemPosition = getLayoutPosition();
+            Intent intent = new Intent(mContext, RestaurantDetailActivity.class);
+            intent.putExtra("position", itemPosition);
+            intent.putExtra("restaurant", Parcels.wrap(mRestaurants));
+            mContext.startActivity(intent);
         }
     }
 }
