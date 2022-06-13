@@ -9,11 +9,15 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,14 +41,16 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class RestaurantListActivity extends AppCompatActivity {
+    private SharedPreferences mSharedPreferences;
+    private SharedPreferences.Editor mEditor;
+    private String mRecentAddress;
+
+    private static final String TAG = RestaurantListActivity.class.getSimpleName();
+    private RestaurantListAdapter mAdapter;
     @BindView(R.id.recyclerView) RecyclerView mRecyclerView;
     @BindView(R.id.errorTextView) TextView mErrorTextView;
     @BindView(R.id.progressBar) ProgressBar mProgressBar;
-
-    private RestaurantListAdapter mAdapter;
     public List<Business> restaurants;
-    private SharedPreferences mSharedPreferences;
-    private String mRecentAddress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,43 +58,46 @@ public class RestaurantListActivity extends AppCompatActivity {
         setContentView(R.layout.activity_restaurants);
         ButterKnife.bind(this);
 
-        Intent intent = getIntent();
-        String location = intent.getStringExtra("location");
+        mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        mRecentAddress = mSharedPreferences.getString(Constants.PREFERENCES_LOCATION_KEY, null);
+        if(mRecentAddress != null){
+            fetchRestaurants(mRecentAddress);
+        }
+    }
 
-        //        mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-//        mRecentAddress = mSharedPreferences.getString(Constants.PREFERENCES_LOCATION_KEY, null);
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu){
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_search, menu);
+        ButterKnife.bind(this);
 
-        YelpApi client = YelpClient.getClient();
-        Call<YelpBusinessesSearchResponse> call = client.getRestaurants(location, "restaurants");
+        mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        mEditor = mSharedPreferences.edit();
 
-        call.enqueue(new Callback<YelpBusinessesSearchResponse>() {
+        MenuItem menuItem = menu.findItem(R.id.action_search);
+        SearchView searchView = (SearchView) menuItem.getActionView();
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
-            public void onResponse(Call<YelpBusinessesSearchResponse> call, Response<YelpBusinessesSearchResponse> response) {
-                if (response.isSuccessful()) {
-                    Log.i("Success Message", "Response is Successful");
-                    restaurants = response.body().getBusinesses();
-                    mAdapter = new RestaurantListAdapter(RestaurantListActivity.this, restaurants);
-                    mRecyclerView.setAdapter(mAdapter);
-                    RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(RestaurantListActivity.this);
-                    mRecyclerView.setLayoutManager(layoutManager);
-                    mRecyclerView.setHasFixedSize(true);
-
-                    showRestaurants();
-                    hideProgressBar();
-                } else {
-                    showUnsuccessfulMessage();
-                    hideProgressBar();
-                }
+            public boolean onQueryTextSubmit(String location) {
+                addToSharedPreferences(location);
+                fetchRestaurants(location);
+                return false;
             }
 
+
             @Override
-            public void onFailure(Call<YelpBusinessesSearchResponse> call, Throwable t) {
-                Log.e("Error Message", "onFailure: ",t );
-                hideProgressBar();
-                showFailureMessage();
+            public boolean onQueryTextChange(String location) {
+                return false;
             }
         });
 
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item){
+        return super.onOptionsItemSelected(item);
     }
 
     private void showFailureMessage() {
@@ -109,4 +118,40 @@ public class RestaurantListActivity extends AppCompatActivity {
         mProgressBar.setVisibility(View.GONE);
     }
 
+    private void addToSharedPreferences(String location) {
+        mEditor.putString(Constants.PREFERENCES_LOCATION_KEY, location).apply();
+    }
+
+    private void fetchRestaurants(String location){
+        YelpApi client = YelpClient.getClient();
+        Call<YelpBusinessesSearchResponse> call = client.getRestaurants(location, "restaurants");
+        call.enqueue(new Callback<YelpBusinessesSearchResponse>() {
+            @Override
+            public void onResponse(Call<YelpBusinessesSearchResponse> call, Response<YelpBusinessesSearchResponse> response) {
+
+                hideProgressBar();
+
+                if (response.isSuccessful()) {
+                    restaurants = response.body().getBusinesses();
+                    mAdapter = new RestaurantListAdapter(RestaurantListActivity.this, restaurants);
+                    mRecyclerView.setAdapter(mAdapter);
+                    RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(RestaurantListActivity.this);
+                    mRecyclerView.setLayoutManager(layoutManager);
+                    mRecyclerView.setHasFixedSize(true);
+
+                    showRestaurants();
+                } else {
+                    showUnsuccessfulMessage();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<YelpBusinessesSearchResponse> call, Throwable t) {
+                Log.e(TAG, "onFailure: ",t );
+                hideProgressBar();
+                showFailureMessage();
+            }
+
+        });
+    }
 }
